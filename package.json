@@ -13,6 +13,7 @@
   "author": "",
   "license": "",
   "peerDependencies": {
-    "react-native": "^0.41.2"
+    "react-native": "^0.41.2",
+    "react-native-material-experience": "^1.0.0"
   }
 }

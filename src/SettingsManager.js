@@ -13,7 +13,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import { MaterialDialog, RadioButton } from 'react-native-material-navigation';
+import { MaterialDialog, RadioButton } from 'react-native-material-experience';
 
 import SettingView from './SettingView';
 

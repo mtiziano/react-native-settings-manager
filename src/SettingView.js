@@ -15,7 +15,7 @@ import {
   RuntimeException,
 } from 'react-native';
 
-import { TouchableRipple } from 'react-native-material-navigation';
+import { TouchableRipple } from 'react-native-material-experience';
 
 // wip - implement tintColor
 

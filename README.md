@@ -48,7 +48,7 @@ class SettingsScreen extends Component<{}> {
 
 <img src="https://github.com/numez/react-native-settings-manager/blob/master/img/settings.png" width="320"/>
 
-## Retrive setting
+## Retrieve setting
 
 ```javascript
 AppSettings.getValue('volume', (value) => {

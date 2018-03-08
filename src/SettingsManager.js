@@ -20,8 +20,10 @@ import SettingView from './SettingView';
 const prefix = '#sm_';
 const getKey = (id) => prefix + id;
 
-const setValue = (id, value) => {
-  AsyncStorage.setItem(getKey(id), ''+value);
+const _setValue = (id, value, handler) => {
+  AsyncStorage.setItem(getKey(id), ''+value).then(result => {
+    if(handler) handler();
+  }).catch(err => {/*do nothing*/}).done();
 };
 
 export const SettingsManager = (settings) => {
@@ -30,7 +32,7 @@ export const SettingsManager = (settings) => {
   //if(settings.list.length===0) console.err('SettingsManager: empty list');
 
   return {
-    View: (props)=>(<SettingsManagerView settings={settings} onValueChange={props.onValueChange}/>),
+    View: (props)=>(<SettingsManagerView ref={comp=>this.comp=comp} settings={settings} onValueChange={props.onValueChange}/>),
     getValue: (id, handler) => {
       let defaultValue = settings[id].default;
       AsyncStorage.getItem(getKey('media')).then((value)=>{
@@ -38,11 +40,16 @@ export const SettingsManager = (settings) => {
         else handler(defaultValue);
       }).catch(err => handler(defaultValue)).done();
     },
-    setValue,
+    setValue: (id, value, handler)=>{
+      _setValue(id, value, ()=>{
+        if(this.comp) this.comp.syncValues();
+        if(handler) handler();
+      })
+    },
   }
 }
 
-class SettingsManagerView extends Component<{}> {
+class SettingsManagerView extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -52,6 +59,10 @@ class SettingsManagerView extends Component<{}> {
   }
 
   componentWillMount() {
+    this.syncValues();
+  }
+
+  syncValues() {
     let smKeys = this.state.keys.map(item => getKey(item));
     AsyncStorage.multiGet(smKeys, (err, stores) => {
       let values = {};
@@ -77,7 +88,7 @@ class SettingsManagerView extends Component<{}> {
     let values = Object.assign({}, this.state.values);
     values[key] = value;
     this.setState({values});
-    setValue(key, value);
+    _setValue(key, value);
     if(this.props.onValueChange) this.props.onValueChange(key, value);
   }
 

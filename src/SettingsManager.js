@@ -78,6 +78,7 @@ class SettingsManagerView extends Component<{}> {
     values[key] = value;
     this.setState({values});
     setValue(key, value);
+    if(this.props.onValueChange) this.props.onValueChange(key, value);
   }
 
   renderSettings() {

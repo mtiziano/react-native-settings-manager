@@ -30,7 +30,7 @@ export const SettingsManager = (settings) => {
   //if(settings.list.length===0) console.err('SettingsManager: empty list');
 
   return {
-    View: ()=>(<SettingsManagerView settings={settings}/>),
+    View: (props)=>(<SettingsManagerView settings={settings} onValueChange={props.onValueChange}/>),
     getValue: (id, handler) => {
       let defaultValue = settings[id].default;
       AsyncStorage.getItem(getKey('media')).then((value)=>{

@@ -88,7 +88,7 @@ export default class SettingView extends Component<{}> {
         <Touchable onPress={this.onPress.bind(this)}>
           <View style={styles.container}>
             <View style={styles.iconCol}>
-              <Image style={styles.icon} source={this.props.icon}/>
+              {typeof this.props.icon === 'function' ? this.props.icon() : <Image style={styles.icon} source={this.props.icon}/>}
             </View>
             <View style={styles.infoCol}>
               <Text style={styles.title}>{this.props.title}</Text>

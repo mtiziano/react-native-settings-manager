@@ -33,9 +33,16 @@ export const SettingsManager = (settings) => {
 
   return {
     View: (props)=>(<SettingsManagerView ref={comp=>this.comp=comp} settings={settings} onValueChange={props.onValueChange}/>),
+    getValueAsync: async (id) => {
+      try {
+        const value = await AsyncStorage.getItem(getKey(id))
+        if (value !== null) return value;
+      } catch (err) { }
+      return settings[id].default;
+    },
     getValue: (id, handler) => {
       let defaultValue = settings[id].default;
-      AsyncStorage.getItem(getKey('media')).then((value)=>{
+      AsyncStorage.getItem(getKey(id)).then((value)=>{
         if(value!==null) handler(value);
         else handler(defaultValue);
       }).catch(err => handler(defaultValue)).done();

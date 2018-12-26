@@ -21,9 +21,9 @@ const prefix = '#sm_';
 const getKey = (id) => prefix + id;
 
 const _setValue = (id, value, handler) => {
-  AsyncStorage.setItem(getKey(id), ''+value).then(result => {
-    if(handler) handler();
-  }).catch(err => {/*do nothing*/}).done();
+  AsyncStorage.setItem(getKey(id), '' + value).then(result => {
+    if (handler) handler();
+  }).catch(err => {/*do nothing*/ }).done();
 };
 
 export const SettingsManager = (settings) => {
@@ -32,7 +32,12 @@ export const SettingsManager = (settings) => {
   //if(settings.list.length===0) console.err('SettingsManager: empty list');
 
   return {
-    View: (props)=>(<SettingsManagerView ref={comp=>this.comp=comp} settings={settings} onValueChange={props.onValueChange}/>),
+    View: (props) => (
+      <SettingsManagerView
+        ref={comp => this.comp = comp}
+        settings={settings} onValueChange={props.onValueChange}
+      />
+    ),
     getValueAsync: async (id) => {
       try {
         const value = await AsyncStorage.getItem(getKey(id))
@@ -42,15 +47,15 @@ export const SettingsManager = (settings) => {
     },
     getValue: (id, handler) => {
       let defaultValue = settings[id].default;
-      AsyncStorage.getItem(getKey(id)).then((value)=>{
-        if(value!==null) handler(value);
+      AsyncStorage.getItem(getKey(id)).then((value) => {
+        if (value !== null) handler(value);
         else handler(defaultValue);
       }).catch(err => handler(defaultValue)).done();
     },
-    setValue: (id, value, handler)=>{
-      _setValue(id, value, ()=>{
-        if(this.comp) this.comp.syncValues();
-        if(handler) handler();
+    setValue: (id, value, handler) => {
+      _setValue(id, value, () => {
+        if (this.comp) this.comp.syncValues();
+        if (handler) handler();
       })
     },
   }
@@ -79,24 +84,24 @@ class SettingsManagerView extends Component {
 
         let setting = this.props.settings[key];
 
-        if(value===null) value = setting.default;
-        else if(value==='true' || value==='false') value = value === 'true';
-        else if(!isNaN(value)) value = parseInt(value);
+        if (value === null) value = setting.default;
+        else if (value === 'true' || value === 'false') value = value === 'true';
+        else if (!isNaN(value)) value = parseInt(value);
 
-        if(setting.type==='picker' && !value) value = 0;
+        if (setting.type === 'picker' && !value) value = 0;
 
         values[key] = value;
       });
-      this.setState({values});
+      this.setState({ values });
     });
   }
 
   onValueChange(key, value) {
     let values = Object.assign({}, this.state.values);
     values[key] = value;
-    this.setState({values});
+    this.setState({ values });
     _setValue(key, value);
-    if(this.props.onValueChange) this.props.onValueChange(key, value);
+    if (this.props.onValueChange) this.props.onValueChange(key, value);
   }
 
   renderSettings() {
@@ -105,24 +110,23 @@ class SettingsManagerView extends Component {
       let setting = this.props.settings[key];
       return (
         <SettingView
-          key={key+index}
+          key={key + index}
           value={this.state.values[key]}
           tintColor={this.props.tintColor}
-          onPickerRequest={()=>{
+          onPickerRequest={() => {
             this.setState({
               pickerTitle: setting.title,
               pickerKey: key,
               pickerList: setting.list,
               pickerValue: this.state.values[key],
-            }, ()=>{
+            }, () => {
               if (Platform.OS === 'ios') {
                 this.showActionSheet();
               }
             })
-          }
-        }
-          onValueChange={(value)=>this.onValueChange(key, value)}
-          divider={index>0 && setting.group!==this.props.settings[keys[index-1]].group}
+          }}
+          onValueChange={(value) => this.onValueChange(key, value)}
+          divider={index > 0 && setting.group !== this.props.settings[keys[index - 1]].group}
           {...setting}
         />
       )
@@ -131,7 +135,7 @@ class SettingsManagerView extends Component {
 
   onPickerSelectedValue(value) {
     this.onValueChange(this.state.pickerKey, value);
-    this.setState({pickerList:null});
+    this.setState({ pickerList: null });
   }
 
   showActionSheet() {
@@ -145,9 +149,9 @@ class SettingsManagerView extends Component {
       //destructiveButtonIndex: this.state.pickerValue+1,
       cancelButtonIndex: 0,
     },
-    (buttonIndex) => {
-      if (buttonIndex != 0) this.onPickerSelectedValue(buttonIndex-1);
-    });
+      (buttonIndex) => {
+        if (buttonIndex != 0) this.onPickerSelectedValue(buttonIndex - 1);
+      });
   }
 
   render() {
@@ -162,31 +166,32 @@ class SettingsManagerView extends Component {
 
 
         {Platform.OS === 'android' ?
-        <MaterialDialog
-          title={this.state.pickerTitle}
-          visible={this.state.pickerList ? true : false}
-          onRequestClose={()=>this.setState({pickerList:null})}
-          actions={[{title:'CLOSE', onPress:()=>this.setState({pickerList:null})}]}
-        >
-          {this.state.pickerList ? (
-            <ScrollView>
-              <View style={styles.pickerContent}>
-                {this.state.pickerList.map((item, index) => (
-                  <RadioButton
-                    key={index}
-                    onValueChange={()=>this.onPickerSelectedValue(index)}
-                    title={item}
-                    tintColor='#009385'
-                    value={index===this.state.pickerValue}
-                  />
-                ))}
-              </View>
-            </ScrollView>
-          ) : null}
-        </MaterialDialog>
-        :
-        null
-      }
+          <MaterialDialog
+            title={this.state.pickerTitle}
+            visible={this.state.pickerList ? true : false}
+            onRequestClose={() => this.setState({ pickerList: null })}
+            actions={[{ title: 'CLOSE', onPress: () => this.setState({ pickerList: null }) }]}
+          >
+            {this.state.pickerList ? (
+              <ScrollView>
+                <View style={styles.pickerContent}>
+                  {this.state.pickerList.map((item, index) => (
+                    <RadioButton
+                      key={index}
+                      onValueChange={() => this.onPickerSelectedValue(index)}
+                      title={item}
+                      tintColor='#009385'
+                      value={index === this.state.pickerValue}
+                      style={{ paddingHorizontal: 16, paddingVertical: 8 }}
+                    />
+                  ))}
+                </View>
+              </ScrollView>
+            ) : null}
+          </MaterialDialog>
+          :
+          null
+        }
 
       </View>
     );

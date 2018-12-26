@@ -20,20 +20,21 @@ import { TouchableRipple } from 'react-native-material-experience';
 // wip - implement tintColor
 
 // picker slider switch
-export default class SettingView extends Component<{}> {
+export default class SettingView extends Component {
   constructor(props) {
     super(props);
 
     // check integrity
-    if(!props.type) console.err('SettingsManager: missing prop "type" to setting');
+    if (!props.type) console.err('SettingsManager: missing prop "type" to setting');
 
-    if(props.type==='picker' && !props.list)
+    if (props.type === 'picker' && !props.list)
       console.err('SettingsManager: missing prop "list" for type "picker" to setting');
+
 
   }
 
   onPress() {
-    switch(this.props.type) {
+    switch (this.props.type) {
       case 'switch':
         this.props.onValueChange(!this.props.value);
         break;
@@ -47,28 +48,27 @@ export default class SettingView extends Component<{}> {
     let tintColor = this.props.tintColor;
     let onTintColor = null; // tintColor with opacity
 
-    switch(this.props.type) {
+    switch (this.props.type) {
       case 'slider':
         return (
           <Slider
-            style={{paddingTop:16}}
+            style={{ paddingTop: 16 }}
             minimumValue={0}
             maximumValue={100}
             step={1}
             value={this.props.value}
-            onSlidingComplete={(value)=>this.props.onValueChange(value)}
+            onSlidingComplete={(value) => this.props.onValueChange(value)}
           />
         );
       case 'switch':
         return (
           <Switch
-            ref='switch'
-            style={{marginHorizontal:16, marginTop:0, marginBottom:8}}
+            style={{ marginHorizontal: 16, marginTop: 0, marginBottom: 8 }}
             value={this.props.value}
-            onValueChange={(value)=>this.props.onValueChange(value)}
+            onValueChange={(value) => this.props.onValueChange(value)}
 
-            tintColor="#dadada"
-            thumbTintColor={this.props.value ? tintColor : "#ffffff"}
+            trackColor="#dadada"
+            thumbColor={tintColor && (this.props.value ? tintColor : "#ffffff")}
             onTintColor={onTintColor}
           />
         );
@@ -78,26 +78,24 @@ export default class SettingView extends Component<{}> {
 
   render() {
     let subtitle = this.props.subtitle;
-    if(this.props.type==='picker') subtitle = this.props.list[this.props.value];
-
-    const Touchable = (props)=>{return this.props.type !== 'slider' ? <TouchableRipple {...props}/> : <View {...props}/>}
+    if (this.props.type === 'picker') subtitle = this.props.list[this.props.value];
 
     return (
       <View style={this.props.divider ? styles.divider : null}>
         {this.props.divider && isNaN(this.props.group) ? <Text style={styles.header}>{this.props.group}</Text> : null}
-        <Touchable onPress={this.onPress.bind(this)}>
+        <TouchableRipple onPress={this.onPress.bind(this)} disabled={this.props.type === 'slider'}>
           <View style={styles.container}>
             <View style={styles.iconCol}>
-              {typeof this.props.icon === 'function' ? this.props.icon() : <Image style={styles.icon} source={this.props.icon}/>}
+              {typeof this.props.icon === 'function' ? this.props.icon() : <Image style={styles.icon} source={this.props.icon} />}
             </View>
             <View style={styles.infoCol}>
               <Text style={styles.title}>{this.props.title}</Text>
-              {(subtitle && this.props.type!=='slider') ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
-              {this.props.type==='slider' ? this.renderController() : null}
+              {(subtitle && this.props.type !== 'slider') ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
+              {this.props.type === 'slider' ? this.renderController() : null}
             </View>
-            {this.props.type!=='slider' ? this.renderController() : null}
+            {this.props.type !== 'slider' ? this.renderController() : null}
           </View>
-        </Touchable>
+        </TouchableRipple>
       </View>
     );
   }
@@ -118,7 +116,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 8,
     fontWeight: 'normal',
-    fontFamily: Platform.OS==='ios' ? null : 'sans-serif-medium',
+    fontFamily: Platform.OS === 'ios' ? null : 'sans-serif-medium',
   },
   divider: {
     borderTopWidth: 1 / PixelRatio.get(),
